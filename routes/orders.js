@@ -31,7 +31,51 @@ module.exports = (knex) => {
   // });
 
   //name, phone number, cardinfo (# & ccv), userid, order items, order quantity
+
+  router.post("/checkout", (req, res) => {
+    console.log("aaaa");
+    let tmpUserId= 1;
+    let tmpCart = [{},{},{}];
+    
+    // let testObj = [
+    //   {quantity: 2, menu_id: "???"},
+    //   {quantity: 1, menu_id: "!!!"}
+    // ];
+
+    // if (0) { // error
+
+    // } else {
+
+    //   if (0) { // user didn't log-in
+
+    //   } else {
+
+    //     knex('users').insert({name: 'test', phone: 0000})
+    //     .then(
+         
+    //       knex('"order"').insert({user_id: "ssss"})
+    //       .then(
+
+    //         testObj.forEach(()=>{
+              
+    //           knex('order_items').insert({quantity: "???",menu_id: "???", order_id:"???"})
+
+    //         })
+
+    //      )
+    //      .then(
+    
+    //       
+    //     )
+
+    //     )
+    //   }
+    // }
+    res.redirect('/confirmation')
+  });
+
   router.get("/checkout", (req, res) => {
+    console.log("aaa");
     res.render('checkout');
   });
 

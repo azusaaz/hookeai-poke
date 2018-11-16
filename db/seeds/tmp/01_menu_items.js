@@ -1,5 +1,5 @@
 exports.seed = function(knex, Promise) {
-  return knex('order').del()
+  return knex('menu').del()
     .then(function () {
       return Promise.all([
         knex('menu').insert({id: 1, name: 'Poke Bowl 1', price: 5, description: 'This is Poke Bowl 1'}),
