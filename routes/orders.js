@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 
 module.exports = (knex) => {
   // router.get("/", (req, res) => {
@@ -32,46 +32,57 @@ module.exports = (knex) => {
 
   //name, phone number, cardinfo (# & ccv), userid, order items, order quantity
 
+
   router.post("/checkout", (req, res) => {
     console.log("aaaa");
-    let tmpUserId= 1;
-    let tmpCart = [{},{},{}];
-    
-    // let testObj = [
-    //   {quantity: 2, menu_id: "???"},
-    //   {quantity: 1, menu_id: "!!!"}
-    // ];
+    let tmpUserId = 1;
+    let tmpCart = [{
+      quatity: 2,
+      menu_id: 1
+    }, {
+      quantity: 1,
+      menu_id: 2
+    }, {
+      quantity: 5,
+      menu_id: 3
+    }];
 
-    // if (0) { // error
+    if (0) { // error
 
-    // } else {
+    } else {
 
-    //   if (0) { // user didn't log-in
+      if (req.session["user_id"]) {
 
-    //   } else {
 
-    //     knex('users').insert({name: 'test', phone: 0000})
-    //     .then(
-         
-    //       knex('"order"').insert({user_id: "ssss"})
-    //       .then(
+      } else { // user didn't log-in
 
-    //         testObj.forEach(()=>{
-              
-    //           knex('order_items').insert({quantity: "???",menu_id: "???", order_id:"???"})
+        knex('users').insert({
+            name: 'test',
+            phone: 0000
+          })
+          .then((results) => {
+            console.log(result);
+          })
 
-    //         })
+        // knex('"order"').insert({
+        //     user_id: "ssss"
+        //   })
+        //   .then(
 
-    //      )
-    //      .then(
-    
-    //       
-    //     )
+        //     testObj.forEach(() => {
 
-    //     )
-    //   }
-    // }
-    res.redirect('/confirmation')
+        //       knex('order_items').insert({
+        //         quantity: "???",
+        //         menu_id: "???",
+        //         order_id: "???"
+        //       })
+
+        //     })
+        //   )
+
+      }
+    }
+    res.render('/confirmation')
   });
 
   router.get("/checkout", (req, res) => {
@@ -80,7 +91,30 @@ module.exports = (knex) => {
   });
 
   router.get("/confirmation", (req, res) => {
-  res.render('confirmation');
+    res.render('confirmation');
   });
+
+  //name, phone number, cardinfo (# & ccv), userid, order items, order quantity
+  // router.post("/checkout", (req, res) => {
+
+  // });
+
+  router.get("/:id", (req, res) => {
+    knex
+      .select('menu.name', 'order_items.quantity', 'menu.price')
+      .from('order')
+      .join('users', 'users.id', '=', 'order.user_id')
+      .join('order_items', 'order.id', '=', 'order_items.order_id')
+      .join('menu', 'menu.id', '=', 'order_items.menu_id')
+      .where('users.id', '=', req.params.id)
+      .then((result) => {
+        const templateVars = {
+          order: result
+        }
+        console.log(templateVars);
+        res.render('pastOrders', templateVars);
+      });
+  });
+
   return router;
 };
