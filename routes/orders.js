@@ -4,40 +4,16 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (knex) => {
-  // router.get("/", (req, res) => {
-  //   knex
-  //     .select("*")
-  //     .from("order")
-  //     .join('order_items', 'order.id', '=', 'order_items.order_id')
-  //     .join('menu', 'menu.id', '=', 'order_items.menu_id')
-  //     .then((results) => {
-  //       console.log(results);
-  //       res.json(results);
-  //   });
-  // });
-
   //past orders
-  // router.get("/:id", (req, res) => {
-  //   knex
-  //     .select("*")
-  //     .from("order")
-  //     .join('order_items', 'order.id', '=', 'order_items.order_id')
-  //     .join('users', 'users.id', '=', req.params.id)
-  //     .join('menu', 'menu.id', '=', 'order_items.menu_id')
-  //     .then((results) => {
-  //       console.log(results);
-  //       res.json(results);
-  //   });
-  // });
-
-  //name, phone number, cardinfo (# & ccv), userid, order items, order quantity
-
 
   router.post("/checkout", (req, res) => {
-    console.log("aaaa");
-    let tmpUserId = 1;
-    let tmpCart = [{
-      quatity: 2,
+
+    // *** After Merged ***
+    // Cart = req.body.cart;
+
+    // test obj
+    let Cart = [{
+      quantity: 2,
       menu_id: 1
     }, {
       quantity: 1,
@@ -47,58 +23,63 @@ module.exports = (knex) => {
       menu_id: 3
     }];
 
-    if (0) { // error
-
-    } else {
-
-      if (req.session["user_id"]) {
-
-
-      } else { // user didn't log-in
-
-        knex('users').insert({
-            name: 'test',
-            phone: 0000
-          })
+    knex.insert([{
+          name: req.body["email"],
+          phone: req.body["phone-number"]
+        }], "id").into('users')
+        .then((results) => {
+          return results[0];
+        })
+        .then((user_id) => 
+          knex.insert([{
+            card: req.body["card-num"],
+            expiry: req.body["ex-month"]+"/"+req.body["ex-year"],
+            ccv: req.body["cvv"],
+            user_id: user_id
+          }], "user_id").into('payment')
           .then((results) => {
-            console.log(result);
+            return results[0];
           })
+          .then((user_id) =>
+            knex.insert([{
+              user_id: user_id,
+            }], "id").into('order')
+          )
+          .then((results) => {
+            return results[0];
+          })
+          .then((order_id) => {  
+            Promise.all(Cart.map((item) => {
+              return knex.insert([{
+                order_id: order_id,
+                menu_id: item.menu_id,
+                quantity: item.quantity,
+        
+              }]).into('order_items')
+            }))
+          })
+        )
 
-        // knex('"order"').insert({
-        //     user_id: "ssss"
-        //   })
-        //   .then(
-
-        //     testObj.forEach(() => {
-
-        //       knex('order_items').insert({
-        //         quantity: "???",
-        //         menu_id: "???",
-        //         order_id: "???"
-        //       })
-
-        //     })
-        //   )
-
-      }
-    }
-    res.render('/confirmation')
+      res.redirect('/orders/confirmation');
   });
 
+
+  // select menu.name, order_items.quantity, menu.price from "order"
+  // join users on users.id = "order".user_id
+  // join order_items on "order".id = order_items.order_id
+  // join menu on menu.id = order_items.menu_id
+  // where users.id = 1;
+
   router.get("/checkout", (req, res) => {
-    console.log("aaa");
+
     res.render('checkout');
   });
 
   router.get("/confirmation", (req, res) => {
+
     res.render('confirmation');
   });
-
-  //name, phone number, cardinfo (# & ccv), userid, order items, order quantity
-  // router.post("/checkout", (req, res) => {
-
-  // });
-
+  
   router.get("/:id", (req, res) => {
     knex
       .select('menu.name', 'order_items.quantity', 'menu.price')
@@ -108,12 +89,14 @@ module.exports = (knex) => {
       .join('menu', 'menu.id', '=', 'order_items.menu_id')
       .where('users.id', '=', req.params.id)
       .then((result) => {
+
         const templateVars = {
           order: result
         }
         console.log(templateVars);
         res.render('pastOrders', templateVars);
       });
+
   });
 
   return router;
