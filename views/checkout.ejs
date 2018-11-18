@@ -164,7 +164,7 @@
             menuItems.forEach((menuItem) => {
               let quantity = countOfItems[menuItem.id]
               const $quantitySelect = $(
-                `<select class="form-control quantity-select" >
+                `<select class="form-control quantity-select" name="menu_id${menuItem.id}" >
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
