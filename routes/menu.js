@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 
 
 module.exports = (knex) => {
@@ -11,10 +11,12 @@ module.exports = (knex) => {
       .select("*")
       .from("menu")
       .then((results) => {
-        const templateVars = {menu: results, user: req.session.user_id};
-        console.log(templateVars.price);
-        res.render("menu",templateVars);
-    });
+        const templateVars = {
+          menu: results,
+          user: req.session.user_id
+        };
+        res.render("menu", templateVars);
+      });
   });
 
 
@@ -23,10 +25,12 @@ module.exports = (knex) => {
       .select('menu.name', 'order_items.quantity', 'menu.price')
       .from('order')
       .then((result) => {
-        const templateVars = {order: result, user: req.session.user_id}
-        console.log(templateVars);
+        const templateVars = {
+          order: result,
+          user: req.session.user_id
+        }
         res.render('pastOrders', templateVars);
-    });
+      });
   });
 
   return router;
