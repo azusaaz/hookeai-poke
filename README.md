@@ -5,6 +5,13 @@ Hungry clients of Hookeai Poke can visit this website, select one or more dishes
 
 This app was created by: Chris Arsenault, Ivana Lee, Ryan Kendrick and Azusa Shimazaki.
 
+
+## Screenshots
+!["Landing page1"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-main1.png?raw=true)
+!["Menu page2"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-menu2.png?raw=true)
+!["Checkout page"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-checkout.png?raw=true)
+
+
 ## Getting Started
 
 1. Clone this repo
@@ -31,12 +38,3 @@ Important Note: As the twilio API is used to send texts, you will need to set up
 - Node-sass-middleware: ^0.9.8
 - Pg: ^6.0.2
 - Twilio: ^3.23.2
-
-## Screenshots
-!["Landing page1"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-main1.png?raw=true)
-!["Landing page2"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-main2.png?raw=true)
-!["Menu page1"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-menu1.png?raw=true)
-!["Menu page2"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-menu2.png?raw=true)
-!["Checkout page"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-checkout.png?raw=true)
-!["Confirmation page"](https://github.com/chrisstanarsenault/hookeai-poke/blob/master/docs/hookeai-poke-ss-confirmation.png?raw=true)
-
