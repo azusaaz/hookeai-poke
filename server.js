@@ -2,20 +2,20 @@
 
 require('dotenv').config();
 
-const PORT              = process.env.PORT || 8080;
-const ENV               = process.env.ENV || "development";
-const HTTP              = require('http');
-const express           = require("express");
-const bodyParser        = require("body-parser");
-const sass              = require("node-sass-middleware");
-const cookieSession     = require("cookie-session");
+const PORT = process.env.PORT || 8080;
+const ENV = process.env.ENV || "development";
+const HTTP = require('http');
+const express = require("express");
+const bodyParser = require("body-parser");
+const sass = require("node-sass-middleware");
+const cookieSession = require("cookie-session");
 
-const app               = express();
+const app = express();
 
-const knexConfig        = require("./knexfile");
-const knex              = require("knex")(knexConfig[ENV]);
-const morgan            = require('morgan');
-const knexLogger        = require('knex-logger');
+const knexConfig = require("./knexfile");
+const knex = require("knex")(knexConfig[ENV]);
+const morgan = require('morgan');
+const knexLogger = require('knex-logger');
 
 // Seperated Routes for each Resource
 const menuRoutes = require("./routes/menu");
@@ -61,11 +61,13 @@ app.use("/sms", smsRoutes(knex));
 
 // Home page
 app.get("/", (req, res) => {
-  const templateVars = {user: req.session.user_id};
+  const templateVars = {
+    user: req.session.user_id
+  };
   res.render("main", templateVars);
 });
 
-HTTP.createServer(app).listen(8080, () => {
+HTTP.createServer(app).listen(process.env.PORT || 8080, () => {
   console.log('Express server listening on port 8080');
 });
 
