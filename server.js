@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
 });
 
 HTTP.createServer(app).listen(PORT, () => {
-  console.log('Express server listening on port 8080');
+  console.log(`Express server listening on port ${PORT}`);
 });
 
 // app.listen(PORT, () => {

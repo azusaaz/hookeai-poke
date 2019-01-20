@@ -10,131 +10,131 @@ const client = new twilio(accountSid, authToken);
 
 module.exports = (knex) => {
 
-    router.post("/getItemInformation", (req, res) => {
-      var fullItem = JSON.parse(req.body.itemIds)
-      var itemIds = Object.keys(fullItem)
+  router.post("/getItemInformation", (req, res) => {
+    var fullItem = JSON.parse(req.body.itemIds)
+    var itemIds = Object.keys(fullItem)
 
-      knex
-        .select('id', 'name', 'price')
-        .from('menu')
-        .then((results) => {
-          var filteredResults = results.filter((item) => {
-            return itemIds.indexOf(item.id.toString()) > -1;
-          })
-
-          res.json(filteredResults);
+    knex
+      .select('id', 'name', 'price')
+      .from('menu')
+      .then((results) => {
+        var filteredResults = results.filter((item) => {
+          return itemIds.indexOf(item.id.toString()) > -1;
         })
-    });
 
-    function getCartItems(items) {
-      let cart = [];
+        res.json(filteredResults);
+      })
+  });
 
-      for (let key in items) {
-        if (key.match(/menu_id/)) {
-          let menu_id = key.replace(/menu_id/, "");
-          let tmp = {
-            menu_id: menu_id,
-            quantity: items[key]
-          };
-          cart.push(tmp);
-        }
+  function getCartItems(items) {
+    let cart = [];
+
+    for (let key in items) {
+      if (key.match(/menu_id/)) {
+        let menu_id = key.replace(/menu_id/, "");
+        let tmp = {
+          menu_id: menu_id,
+          quantity: items[key]
+        };
+        cart.push(tmp);
       }
-      return cart;
     }
+    return cart;
+  }
 
-    router.post("/checkout", (req, res) => {
+  router.post("/checkout", (req, res) => {
 
-      let cart = getCartItems(req.body);
+    let cart = getCartItems(req.body);
 
-      knex.insert([{
-          name: req.body["email"],
-          phone: req.body["phone-number"]
-        }], "id").into('users')
+    knex.insert([{
+        name: req.body["email"],
+        phone: req.body["phone-number"]
+      }], "id").into('users')
+      .then((results) => {
+        return results[0];
+      })
+      .then((user_id) =>
+        knex.insert([{
+          card: req.body["card-num"],
+          expiry: req.body["ex-month"] + "/" + req.body["ex-year"],
+          ccv: req.body["cvv"],
+          user_id: user_id
+        }], "user_id").into('payment')
         .then((results) => {
           return results[0];
         })
         .then((user_id) =>
           knex.insert([{
-            card: req.body["card-num"],
-            expiry: req.body["ex-month"] + "/" + req.body["ex-year"],
-            ccv: req.body["cvv"],
-            user_id: user_id
-          }], "user_id").into('payment')
-          .then((results) => {
-            return results[0];
-          })
-          .then((user_id) =>
-            knex.insert([{
-              user_id: user_id,
-            }], "id").into('order')
-          )
-          .then((results) => {
-            return results[0];
-          })
-          .then((order_id) => {
-            Promise.all(cart.map((item) => {
-              return knex.insert([{
-                order_id: order_id,
-                menu_id: item.menu_id,
-                quantity: item.quantity,
-
-              }]).into('order_items')
-            }))
-          })
+            user_id: user_id,
+          }], "id").into('order')
         )
-
-      res.redirect('/orders/confirmation');
-    });
-
-    router.get("/checkout", (req, res) => {
-      knex
-        .select('id', 'name', 'price')
-        .from('menu')
         .then((results) => {
-          const templateVars = {
-            user: req.session.user_id,
-            menuNames: results
-          }
-          res.render('checkout', templateVars)
-        });
+          return results[0];
+        })
+        .then((order_id) => {
+          Promise.all(cart.map((item) => {
+            return knex.insert([{
+              order_id: order_id,
+              menu_id: item.menu_id,
+              quantity: item.quantity,
 
-    });
+            }]).into('order_items')
+          }))
+        })
+      )
 
-    router.get("/confirmation", (req, res) => {
-        client.messages.create({
-            //Send to resturant owner
-            body: 'Poke bowls have been ordered!  Get it ready!!',
-            to: process.env.PHONE_NUM_OWNER, // Text this number
-            from: process.env.PHONE_NUM // From a valid Twilio number
-          })
-          .then((message) =>
-            // console.log(message.sid));
+    res.redirect('/orders/confirmation');
+  });
 
-            const templateVars = {
-              user: req.session.user_id,
-              phone: req.body["phone-number"]
-            }
-            res.render('confirmation', templateVars);
-          });
-
-      router.get("/:id", (req, res) => {
-        knex
-          .select('menu.name', 'order_items.quantity', 'menu.price')
-          .from('order')
-          .join('users', 'users.id', '=', 'order.user_id')
-          .join('order_items', 'order.id', '=', 'order_items.order_id')
-          .join('menu', 'menu.id', '=', 'order_items.menu_id')
-          .where('users.id', '=', req.params.id)
-          .then((result) => {
-
-            const templateVars = {
-              order: result,
-              user: req.session.user_id
-            }
-
-            res.render('pastOrders', templateVars);
-          });
-
+  router.get("/checkout", (req, res) => {
+    knex
+      .select('id', 'name', 'price')
+      .from('menu')
+      .then((results) => {
+        const templateVars = {
+          user: req.session.user_id,
+          menuNames: results
+        }
+        res.render('checkout', templateVars)
       });
-      return router;
-    };
+
+  });
+
+  router.get("/confirmation", (req, res) => {
+    client.messages.create({
+        //Send to resturant owner
+        body: 'Poke bowls have been ordered!  Get it ready!!',
+        to: process.env.PHONE_NUM_OWNER, // Text this number
+        from: process.env.PHONE_NUM // From a valid Twilio number
+      })
+      .then((message) =>
+        console.log(""));
+
+    const templateVars = {
+      user: req.session.user_id,
+      phone: req.body["phone-number"]
+    }
+    res.render('confirmation', templateVars);
+  });
+
+  router.get("/:id", (req, res) => {
+    knex
+      .select('menu.name', 'order_items.quantity', 'menu.price')
+      .from('order')
+      .join('users', 'users.id', '=', 'order.user_id')
+      .join('order_items', 'order.id', '=', 'order_items.order_id')
+      .join('menu', 'menu.id', '=', 'order_items.menu_id')
+      .where('users.id', '=', req.params.id)
+      .then((result) => {
+
+        const templateVars = {
+          order: result,
+          user: req.session.user_id
+        }
+
+        res.render('pastOrders', templateVars);
+      });
+
+  });
+  return router;
+};
