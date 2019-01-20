@@ -6,15 +6,17 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-const accountSid = process.env.SID;
-const authToken = process.env.AUTH;
+// comment out below for demo
 
-const twilio = require('twilio');
-const client = new twilio(accountSid, authToken);
+// const accountSid = process.env.SID;
+// const authToken = process.env.AUTH;
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+// const twilio = require('twilio');
+// const client = new twilio(accountSid, authToken);
+
+// app.use(bodyParser.urlencoded({
+//   extended: true
+// }));
 
 module.exports = (knex) => {
 
