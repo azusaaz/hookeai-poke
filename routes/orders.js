@@ -2,11 +2,11 @@
 const express = require('express');
 const router = express.Router();
 
-const accountSid = process.env.SID;
-const authToken = process.env.AUTH;
+// const accountSid = process.env.SID;
+// const authToken = process.env.AUTH;
 
-const twilio = require('twilio');
-const client = new twilio(accountSid, authToken);
+// const twilio = require('twilio');
+// const client = new twilio(accountSid, authToken);
 
 module.exports = (knex) => {
 
@@ -101,14 +101,14 @@ module.exports = (knex) => {
   });
 
   router.get("/confirmation", (req, res) => {
-    client.messages.create({
-        //Send to resturant owner
-        body: 'Poke bowls have been ordered!  Get it ready!!',
-        to: process.env.PHONE_NUM_OWNER, // Text this number
-        from: process.env.PHONE_NUM // From a valid Twilio number
-      })
-      .then((message) =>
-        console.log(""));
+    // client.messages.create({
+    //     //Send to resturant owner
+    //     body: 'Poke bowls have been ordered!  Get it ready!!',
+    //     to: process.env.PHONE_NUM_OWNER, // Text this number
+    //     from: process.env.PHONE_NUM // From a valid Twilio number
+    //   })
+    //   .then((message) =>
+    //     console.log(""));
 
     const templateVars = {
       user: req.session.user_id,

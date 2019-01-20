@@ -1,7 +1,7 @@
 "use strict";
 const express = require('express');
 const router = express.Router();
-const MessagingResponse = require('twilio').twiml.MessagingResponse;
+// const MessagingResponse = require('twilio').twiml.MessagingResponse;
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -59,5 +59,5 @@ module.exports = (knex) => {
   //   res.end(twiml.toString());
   // });
 
-  // return router;
+  return router;
 }
