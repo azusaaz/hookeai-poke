@@ -67,10 +67,10 @@ app.get("/", (req, res) => {
   res.render("main", templateVars);
 });
 
-HTTP.createServer(app).listen(process.env.PORT || 8080, () => {
-  console.log('Express server listening on port 8080');
-});
-
-// app.listen(PORT, () => {
-//   console.log("Example app listening on port " + PORT);
+// HTTP.createServer(app).listen(process.env.PORT || 8080, () => {
+//   console.log('Express server listening on port 8080');
 // });
+
+app.listen(PORT, () => {
+  console.log("Example app listening on port " + PORT);
+});
